@@ -36,7 +36,6 @@ public class KeyUtils {
   private ECPublicKey publicKey;
 
   KeyUtils() {
-    generateKeyPairs();
   }
 
   /**
@@ -112,6 +111,9 @@ public class KeyUtils {
    * @return Private Key
    */
   private PrivateKey getPrivateKey() {
+    if (!isKeyExists()) {
+      generateKeyPairs();
+    }
     KeyStore keyStore = getKeyStoreInstance();
     if (keyStore == null) {
       return null;
@@ -128,6 +130,9 @@ public class KeyUtils {
    * @return PublicKey
    */
   public ECPublicKey getPublicKey() {
+    if (!isKeyExists()) {
+      generateKeyPairs();
+    }
     KeyStore keyStore = getKeyStoreInstance();
     if (publicKey == null && keyStore != null) {
       try {
@@ -137,6 +142,21 @@ public class KeyUtils {
       }
     }
     return publicKey;
+  }
+
+  /**
+   * @return true if key exists with the given key alias.
+   */
+  private boolean isKeyExists() {
+    KeyStore keyStore = getKeyStoreInstance();
+    if (keyStore != null) {
+      try {
+        return  keyStore.containsAlias(KEY_ALIAS);
+      } catch (KeyStoreException e) {
+        e.printStackTrace();
+      }
+    }
+    return false;
   }
 
   /**
